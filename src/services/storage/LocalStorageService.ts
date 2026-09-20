@@ -7,24 +7,9 @@ import {
   StoreSettings,
   StorageDataBackup,
 } from '../../types';
-import {
-  INITIAL_CATEGORIES,
-  INITIAL_SUBCATEGORIES,
-  INITIAL_PRODUCTS,
-  INITIAL_HOMEPAGE_SETTINGS,
-  INITIAL_STORE_SETTINGS,
-} from './seedData';
+import { LOCAL_STORAGE_SEED, LOCAL_STORAGE_KEYS as KEYS } from '../../data/localStorageSeed';
 import { getLocalStorageUsage } from '../../utils/imageCompressor';
 import { generateProductId, slugify } from '../../utils/formatters';
-
-const KEYS = {
-  CATEGORIES: 'md_categories_v1',
-  SUBCATEGORIES: 'md_subcategories_v1',
-  PRODUCTS: 'md_products_v1',
-  HOMEPAGE: 'md_homepage_v1',
-  SETTINGS: 'md_store_settings_v1',
-  INITIALIZED: 'md_initialized_v1',
-};
 
 class LocalStorageServiceImpl implements IStorageService {
   private isInitialized = false;
@@ -33,14 +18,24 @@ class LocalStorageServiceImpl implements IStorageService {
     if (this.isInitialized) return;
 
     try {
-      const initialized = localStorage.getItem(KEYS.INITIALIZED);
-      if (!initialized) {
-        // First run: populate default seed data
-        localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(INITIAL_CATEGORIES));
-        localStorage.setItem(KEYS.SUBCATEGORIES, JSON.stringify(INITIAL_SUBCATEGORIES));
-        localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
-        localStorage.setItem(KEYS.HOMEPAGE, JSON.stringify(INITIAL_HOMEPAGE_SETTINGS));
-        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(INITIAL_STORE_SETTINGS));
+      // Granular, non-destructive per-key initialization:
+      // Only populates missing keys without overwriting any existing custom data
+      if (!localStorage.getItem(KEYS.CATEGORIES)) {
+        localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(LOCAL_STORAGE_SEED.categories));
+      }
+      if (!localStorage.getItem(KEYS.SUBCATEGORIES)) {
+        localStorage.setItem(KEYS.SUBCATEGORIES, JSON.stringify(LOCAL_STORAGE_SEED.subcategories));
+      }
+      if (!localStorage.getItem(KEYS.PRODUCTS)) {
+        localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(LOCAL_STORAGE_SEED.products));
+      }
+      if (!localStorage.getItem(KEYS.HOMEPAGE)) {
+        localStorage.setItem(KEYS.HOMEPAGE, JSON.stringify(LOCAL_STORAGE_SEED.homepageSettings));
+      }
+      if (!localStorage.getItem(KEYS.SETTINGS)) {
+        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(LOCAL_STORAGE_SEED.storeSettings));
+      }
+      if (!localStorage.getItem(KEYS.INITIALIZED)) {
         localStorage.setItem(KEYS.INITIALIZED, 'true');
       }
       this.isInitialized = true;
@@ -50,11 +45,11 @@ class LocalStorageServiceImpl implements IStorageService {
   }
 
   async resetDemoData(): Promise<void> {
-    localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(INITIAL_CATEGORIES));
-    localStorage.setItem(KEYS.SUBCATEGORIES, JSON.stringify(INITIAL_SUBCATEGORIES));
-    localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
-    localStorage.setItem(KEYS.HOMEPAGE, JSON.stringify(INITIAL_HOMEPAGE_SETTINGS));
-    localStorage.setItem(KEYS.SETTINGS, JSON.stringify(INITIAL_STORE_SETTINGS));
+    localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(LOCAL_STORAGE_SEED.categories));
+    localStorage.setItem(KEYS.SUBCATEGORIES, JSON.stringify(LOCAL_STORAGE_SEED.subcategories));
+    localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(LOCAL_STORAGE_SEED.products));
+    localStorage.setItem(KEYS.HOMEPAGE, JSON.stringify(LOCAL_STORAGE_SEED.homepageSettings));
+    localStorage.setItem(KEYS.SETTINGS, JSON.stringify(LOCAL_STORAGE_SEED.storeSettings));
     localStorage.setItem(KEYS.INITIALIZED, 'true');
   }
 
@@ -66,8 +61,8 @@ class LocalStorageServiceImpl implements IStorageService {
       categories: JSON.parse(localStorage.getItem(KEYS.CATEGORIES) || '[]'),
       subcategories: JSON.parse(localStorage.getItem(KEYS.SUBCATEGORIES) || '[]'),
       products: JSON.parse(localStorage.getItem(KEYS.PRODUCTS) || '[]'),
-      homepageSettings: JSON.parse(localStorage.getItem(KEYS.HOMEPAGE) || JSON.stringify(INITIAL_HOMEPAGE_SETTINGS)),
-      storeSettings: JSON.parse(localStorage.getItem(KEYS.SETTINGS) || JSON.stringify(INITIAL_STORE_SETTINGS)),
+      homepageSettings: JSON.parse(localStorage.getItem(KEYS.HOMEPAGE) || JSON.stringify(LOCAL_STORAGE_SEED.homepageSettings)),
+      storeSettings: JSON.parse(localStorage.getItem(KEYS.SETTINGS) || JSON.stringify(LOCAL_STORAGE_SEED.storeSettings)),
     };
     return JSON.stringify(backup, null, 2);
   }
@@ -104,7 +99,12 @@ class LocalStorageServiceImpl implements IStorageService {
   async getCategories(includeInactive: boolean = false): Promise<Category[]> {
     await this.initialize();
     const raw = localStorage.getItem(KEYS.CATEGORIES);
-    const list: Category[] = raw ? JSON.parse(raw) : [];
+    let list: Category[] = [];
+    try {
+      list = raw ? JSON.parse(raw) : LOCAL_STORAGE_SEED.categories;
+    } catch {
+      list = LOCAL_STORAGE_SEED.categories;
+    }
     const filtered = includeInactive ? list : list.filter((c) => c.isActive);
     return filtered.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   }
@@ -176,7 +176,12 @@ class LocalStorageServiceImpl implements IStorageService {
   async getSubcategories(categoryId?: string, includeInactive: boolean = false): Promise<Subcategory[]> {
     await this.initialize();
     const raw = localStorage.getItem(KEYS.SUBCATEGORIES);
-    let list: Subcategory[] = raw ? JSON.parse(raw) : [];
+    let list: Subcategory[] = [];
+    try {
+      list = raw ? JSON.parse(raw) : LOCAL_STORAGE_SEED.subcategories;
+    } catch {
+      list = LOCAL_STORAGE_SEED.subcategories;
+    }
     if (categoryId) {
       list = list.filter((s) => s.categoryId === categoryId);
     }
@@ -256,7 +261,12 @@ class LocalStorageServiceImpl implements IStorageService {
   }): Promise<Product[]> {
     await this.initialize();
     const raw = localStorage.getItem(KEYS.PRODUCTS);
-    let list: Product[] = raw ? JSON.parse(raw) : [];
+    let list: Product[] = [];
+    try {
+      list = raw ? JSON.parse(raw) : LOCAL_STORAGE_SEED.products;
+    } catch {
+      list = LOCAL_STORAGE_SEED.products;
+    }
 
     if (!filters?.includeHidden) {
       list = list.filter((p) => p.status !== 'HIDDEN' && p.status !== 'DRAFT');
@@ -386,7 +396,11 @@ class LocalStorageServiceImpl implements IStorageService {
   async getHomepageSettings(): Promise<HomepageSettings> {
     await this.initialize();
     const raw = localStorage.getItem(KEYS.HOMEPAGE);
-    return raw ? JSON.parse(raw) : INITIAL_HOMEPAGE_SETTINGS;
+    try {
+      return raw ? JSON.parse(raw) : LOCAL_STORAGE_SEED.homepageSettings;
+    } catch {
+      return LOCAL_STORAGE_SEED.homepageSettings;
+    }
   }
 
   async updateHomepageSettings(settings: Partial<HomepageSettings>): Promise<HomepageSettings> {
@@ -418,7 +432,11 @@ class LocalStorageServiceImpl implements IStorageService {
   async getStoreSettings(): Promise<StoreSettings> {
     await this.initialize();
     const raw = localStorage.getItem(KEYS.SETTINGS);
-    return raw ? JSON.parse(raw) : INITIAL_STORE_SETTINGS;
+    try {
+      return raw ? JSON.parse(raw) : LOCAL_STORAGE_SEED.storeSettings;
+    } catch {
+      return LOCAL_STORAGE_SEED.storeSettings;
+    }
   }
 
   async updateStoreSettings(settings: Partial<StoreSettings>): Promise<StoreSettings> {
