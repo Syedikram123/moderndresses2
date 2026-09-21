@@ -7,7 +7,7 @@
   "background_color": "#FAF8F5",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/admin/",
+  "scope": "/admin",
   "start_url": "/admin",
   "icons": [
     {
