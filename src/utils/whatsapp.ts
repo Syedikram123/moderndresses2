@@ -44,7 +44,7 @@ export function generateWhatsAppUrl({
     currentUrl,
   ];
 
-  const fullMessage = lines.join("\n");
+  const fullMessage = lines.join("\n"); 
 
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(fullMessage)}`;
 }
