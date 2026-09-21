@@ -27,43 +27,24 @@ export function generateWhatsAppUrl({
   selectedSize,
   currentUrl,
   whatsappNumber,
-  isPriceHidden,
-  isOutOfStock
 }: WhatsAppMessageParams): string {
   const cleanPhone = sanitizePhoneNumber(whatsappNumber);
-  
-  let introLine: string;
-  if (isOutOfStock) {
-    introLine = "Hi, I noticed this product is marked out of stock. Could you please let me know if it can be ordered or if similar styles are available?";
-  } else if (isPriceHidden) {
-    introLine = "Hi, I'm interested in this product and would like to know the price and details.";
-  } else {
-    introLine = "Hi, I'm interested in this product. Can I get more details?";
-  }
 
-    const lines = [
-    introLine,
+  const lines = [
+    "Hi Modern Dresses 👋",
+    "I’m interested in this product and would like to know the price and availability.",
     "",
+    `*Product:* ${product.name}`,
+    `*Colour:* ${selectedColour || "Not selected"}`,
+    `*Size:* ${selectedSize || "Not selected"}`,
+    "",
+    "Please share the details. Thank you! 😊",
+    "",
+    "*🔗 Product Link :*",
     currentUrl,
-    "",
   ];
 
-  if (selectedColour) {
-    lines.push(`Colour: ${selectedColour}`);
-  }
-
-  if (selectedSize) {
-    lines.push(`Size: ${selectedSize}`);
-  }
-
   const fullMessage = lines.join("\n");
-  const encodedMessage = encodeURIComponent(fullMessage);
 
-  return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
-}
-
-export function generateGeneralInquiryWhatsAppUrl(whatsappNumber: string, storeName: string = "Modern Dresses"): string {
-  const cleanPhone = sanitizePhoneNumber(whatsappNumber);
-  const message = `Hi ${storeName}, I would like to enquire about your latest fashion collections.`;
-  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(fullMessage)}`;
 }
