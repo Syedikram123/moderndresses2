@@ -19,43 +19,7 @@ export default defineConfig({
         'pwa-maskable-192x192.png',
         'pwa-maskable-512x512.png'
       ],
-      manifest: {
-        name: 'Modern Dresses',
-        short_name: 'Modern Dresses',
-        description: 'Modern Dresses - Fashion for Every Generation. Premium ethnic wear, frocks, kurtis and clothing in Bidar.',
-        theme_color: '#1C1917',
-        background_color: '#FAF8F5',
-        display: 'standalone',
-        orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
-        icons: [
-          {
-            src: '/pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/pwa-maskable-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable'
-          },
-          {
-            src: '/pwa-maskable-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
-          }
-        ]
-      },
+      manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
         runtimeCaching: [
