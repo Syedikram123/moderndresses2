@@ -3,7 +3,8 @@ import { Save, CheckCircle, Upload, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { storageService } from '../../services/storage';
 import { HomepageSettings } from '../../types';
-import { compressImage } from '../../utils/imageCompressor';
+import { compressImage, compressImageToWebP } from '../../utils/imageCompressor';
+import { supabaseMediaService } from '../../services/storage/SupabaseMediaService';
 
 export const AdminHomepageCMS: React.FC = () => {
   const { homepageSettings, categories, refreshSettings } = useStore();
@@ -39,36 +40,75 @@ export const AdminHomepageCMS: React.FC = () => {
 
   const handleHeroImageUpload = async (file: File) => {
     try {
-      const res = await compressImage(file, 1200, 0.82);
-      setSettings({
-        ...settings,
-        hero: { ...settings.hero, image: res.dataUrl },
-      });
-    } catch {
+      if (supabaseMediaService.isConfigured()) {
+        const webpResult = await compressImageToWebP(file, 1200, 0.82);
+        const url = await supabaseMediaService.uploadBanner('hero', webpResult.blob);
+        if (settings.hero.image && settings.hero.image !== url) {
+          supabaseMediaService.deleteMediaByUrlOrPath(settings.hero.image);
+        }
+        setSettings({
+          ...settings,
+          hero: { ...settings.hero, image: url },
+        });
+      } else {
+        const res = await compressImage(file, 1200, 0.82);
+        setSettings({
+          ...settings,
+          hero: { ...settings.hero, image: res.dataUrl },
+        });
+      }
+    } catch (err) {
+      console.error(err);
       alert('Failed to upload hero image.');
     }
   };
 
   const handlePromoImageUpload = async (file: File) => {
     try {
-      const res = await compressImage(file, 1200, 0.82);
-      setSettings({
-        ...settings,
-        promoBanner: { ...settings.promoBanner, image: res.dataUrl },
-      });
-    } catch {
+      if (supabaseMediaService.isConfigured()) {
+        const webpResult = await compressImageToWebP(file, 1200, 0.82);
+        const url = await supabaseMediaService.uploadBanner('promo', webpResult.blob);
+        if (settings.promoBanner.image && settings.promoBanner.image !== url) {
+          supabaseMediaService.deleteMediaByUrlOrPath(settings.promoBanner.image);
+        }
+        setSettings({
+          ...settings,
+          promoBanner: { ...settings.promoBanner, image: url },
+        });
+      } else {
+        const res = await compressImage(file, 1200, 0.82);
+        setSettings({
+          ...settings,
+          promoBanner: { ...settings.promoBanner, image: res.dataUrl },
+        });
+      }
+    } catch (err) {
+      console.error(err);
       alert('Failed to upload promo image.');
     }
   };
 
   const handleCustomImageUpload = async (file: File) => {
     try {
-      const res = await compressImage(file, 1000, 0.82);
-      setSettings({
-        ...settings,
-        customSection: { ...settings.customSection, image: res.dataUrl },
-      });
-    } catch {
+      if (supabaseMediaService.isConfigured()) {
+        const webpResult = await compressImageToWebP(file, 1000, 0.82);
+        const url = await supabaseMediaService.uploadBanner('custom', webpResult.blob);
+        if (settings.customSection.image && settings.customSection.image !== url) {
+          supabaseMediaService.deleteMediaByUrlOrPath(settings.customSection.image);
+        }
+        setSettings({
+          ...settings,
+          customSection: { ...settings.customSection, image: url },
+        });
+      } else {
+        const res = await compressImage(file, 1000, 0.82);
+        setSettings({
+          ...settings,
+          customSection: { ...settings.customSection, image: res.dataUrl },
+        });
+      }
+    } catch (err) {
+      console.error(err);
       alert('Failed to upload custom section image.');
     }
   };
@@ -78,7 +118,7 @@ export const AdminHomepageCMS: React.FC = () => {
     if (list.includes(catId)) {
       setSettings({
         ...settings,
-        visibleCategoryIds: list.filter((id) => id !== catId),
+        visibleCategoryIds: list.filter((id: string) => id !== catId),
       });
     } else {
       setSettings({

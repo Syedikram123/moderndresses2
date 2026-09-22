@@ -8,18 +8,59 @@ import {
   CheckCircle,
   AlertTriangle,
   MessageCircle,
+  Lock,
+  KeyRound,
+  ShieldCheck,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
+import { useAdminAuth } from '../../context/AdminAuthContext';
 import { storageService } from '../../services/storage';
 import { StoreSettings } from '../../types';
 
 export const AdminSettings: React.FC = () => {
   const { storeSettings, refreshSettings, refreshData, storageMetrics } = useStore();
+  const { changePassword } = useAdminAuth();
 
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Admin password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [pwdError, setPwdError] = useState<string | null>(null);
+  const [pwdSuccess, setPwdSuccess] = useState<string | null>(null);
+  const [pwdLoading, setPwdLoading] = useState(false);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwdError(null);
+    setPwdSuccess(null);
+
+    if (newPassword !== confirmPassword) {
+      setPwdError('New passwords do not match.');
+      return;
+    }
+
+    setPwdLoading(true);
+    try {
+      const res = await changePassword(currentPassword, newPassword);
+      if (res.success) {
+        setPwdSuccess('Password changed successfully and updated in Firestore!');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        setPwdError(res.error || 'Failed to change password.');
+      }
+    } catch (err: any) {
+      setPwdError(err?.message || 'Error changing password.');
+    } finally {
+      setPwdLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (storeSettings) {
@@ -191,6 +232,116 @@ export const AdminSettings: React.FC = () => {
             <span>Reset Demo Data</span>
           </button>
         </div>
+      </div>
+
+      {/* ADMIN SECURITY & PASSWORD MANAGEMENT */}
+      <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-soft space-y-5">
+        <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-stone-100 rounded-xl text-charcoal">
+              <ShieldCheck className="w-5 h-5 text-gold-700" />
+            </div>
+            <div>
+              <h2 className="font-editorial text-lg font-bold text-charcoal">
+                Admin Authentication & Password Security
+              </h2>
+              <p className="text-xs text-charcoal-muted">
+                Protected by salted SHA-256 hashing in Firestore (settings/admin_auth)
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {pwdError && (
+          <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
+            {pwdError}
+          </div>
+        )}
+
+        {pwdSuccess && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>{pwdSuccess}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label className="block font-bold uppercase tracking-wider text-charcoal mb-1">
+                Current Password *
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-charcoal-subtle">
+                  <Lock className="w-3.5 h-3.5" />
+                </div>
+                <input
+                  type="password"
+                  required
+                  placeholder="Enter current password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-9 pr-3 py-2.5 text-charcoal focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-bold uppercase tracking-wider text-charcoal mb-1">
+                New Password *
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-charcoal-subtle">
+                  <Lock className="w-3.5 h-3.5" />
+                </div>
+                <input
+                  type="password"
+                  required
+                  placeholder="Min 8 chars, Aa1"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-9 pr-3 py-2.5 text-charcoal focus:outline-none"
+                />
+              </div>
+              <p className="text-[10px] text-charcoal-subtle mt-0.5">Min 8 chars, 1 upper, 1 lower, 1 number</p>
+            </div>
+
+            <div>
+              <label className="block font-bold uppercase tracking-wider text-charcoal mb-1">
+                Confirm New Password *
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-charcoal-subtle">
+                  <Lock className="w-3.5 h-3.5" />
+                </div>
+                <input
+                  type="password"
+                  required
+                  placeholder="Re-enter new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-9 pr-3 py-2.5 text-charcoal focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+            <div className="flex items-center gap-2 text-xs text-charcoal-muted">
+              <KeyRound className="w-3.5 h-3.5 text-gold-700 flex-shrink-0" />
+              <span>Password recovery configured securely in Firestore</span>
+            </div>
+
+            <button
+              type="submit"
+              disabled={pwdLoading}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-charcoal hover:bg-gold-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>{pwdLoading ? 'Updating...' : 'Update Password'}</span>
+            </button>
+          </div>
+        </form>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">

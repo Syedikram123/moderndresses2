@@ -9,6 +9,7 @@ import { ShareModal } from '../../components/customer/ShareModal';
 import { StickyWhatsAppCTA } from '../../components/customer/StickyWhatsAppCTA';
 import { formatPrice, calculateDiscount } from '../../utils/formatters';
 import { generateWhatsAppUrl } from '../../utils/whatsapp';
+import { recordWhatsAppClick } from '../../utils/whatsappAnalytics';
 import { MarketingBadge } from '../../components/common/Badges';
 
 export const ProductPage: React.FC = () => {
@@ -87,6 +88,23 @@ export const ProductPage: React.FC = () => {
     }
     return storeSettings?.whatsappCtaText || 'ORDER THROUGH WHATSAPP';
   }, [isOutOfStock, product?.showPrice, storeSettings]);
+
+  // Record WhatsApp click event
+  const handleWhatsAppClick = () => {
+    if (!product) return;
+    try {
+      recordWhatsAppClick({
+        productId: product.id,
+        productName: product.name,
+        categoryId: category?.id || product.categoryId || '',
+        categoryName: category?.name || '',
+        subcategoryId: subcategory?.id || product.subcategoryId || '',
+        subcategoryName: subcategory?.name || '',
+      });
+    } catch (err) {
+      console.error('Failed to record WhatsApp click event:', err);
+    }
+  };
 
   // Related Products ("You May Also Like") - Requirement #65
   const relatedProducts = useMemo(() => {
@@ -302,6 +320,7 @@ export const ProductPage: React.FC = () => {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={handleWhatsAppClick}
               className={`w-full py-4 px-6 rounded-2xl text-white font-semibold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center gap-3 shadow-md transition-all duration-300 ${
                 isOutOfStock
                   ? 'bg-stone-700 hover:bg-stone-800'
@@ -528,6 +547,7 @@ export const ProductPage: React.FC = () => {
         whatsappUrl={whatsappUrl}
         ctaText={whatsappButtonText}
         subtitle={product.showPrice ? formatPrice(product.sellingPrice) : 'Price on request'}
+        onWhatsAppClick={handleWhatsAppClick}
       />
     </div>
   );

@@ -10,13 +10,21 @@ import {
   ArrowRight,
   Sliders,
   HardDrive,
+  MessageCircle,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { formatPrice } from '../../utils/formatters';
 import { StatusBadge } from '../../components/common/Badges';
+import { getTodayWhatsAppClicksCount } from '../../utils/whatsappAnalytics';
 
 export const AdminDashboard: React.FC = () => {
   const { products, categories, subcategories, storageMetrics } = useStore();
+
+  const [todayClicks, setTodayClicks] = React.useState(0);
+
+  React.useEffect(() => {
+    setTodayClicks(getTodayWhatsAppClicksCount());
+  }, []);
 
   const totalProducts = products.length;
   const activeCategories = categories.filter((c) => c.isActive).length;
@@ -31,7 +39,7 @@ export const AdminDashboard: React.FC = () => {
     { title: 'Total Products', count: totalProducts, icon: Package, color: 'text-blue-600', bg: 'bg-blue-50', link: '/admin/products' },
     { title: 'Categories', count: activeCategories, icon: FolderTree, color: 'text-amber-600', bg: 'bg-amber-50', link: '/admin/categories' },
     { title: 'Subcategories', count: activeSubcats, icon: Tags, color: 'text-indigo-600', bg: 'bg-indigo-50', link: '/admin/subcategories' },
-    // { title: 'Featured Styles', count: featuredProducts, icon: Sparkles, color: 'text-gold-600', bg: 'bg-amber-50', link: '/admin/products' },
+    { title: 'WHATSAPP CLICKS', count: todayClicks, icon: MessageCircle, color: 'text-emerald-600', bg: 'bg-emerald-50', link: '/admin/whatsapp-clicks' },
     { title: 'New Arrivals', count: newArrivals, icon: Sparkles, color: 'text-emerald-600', bg: 'bg-emerald-50', link: '/admin/products' },
     { title: 'Out of Stock', count: outOfStock, icon: AlertCircle, color: 'text-rose-600', bg: 'bg-rose-50', link: '/admin/products' },
   ];

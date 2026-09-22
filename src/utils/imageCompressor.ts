@@ -65,6 +65,95 @@ export function compressImage(
   });
 }
 
+export interface CompressedWebPResult {
+  blob: Blob;
+  width: number;
+  height: number;
+  originalSize: number;
+  compressedSize: number;
+}
+
+export function compressImageToWebP(
+  file: File,
+  maxDimension: number = 900,
+  quality: number = 0.82
+): Promise<CompressedWebPResult> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve({
+                blob,
+                width,
+                height,
+                originalSize: file.size,
+                compressedSize: blob.size,
+              });
+            } else {
+              canvas.toBlob(
+                (jpegBlob) => {
+                  if (jpegBlob) {
+                    resolve({
+                      blob: jpegBlob,
+                      width,
+                      height,
+                      originalSize: file.size,
+                      compressedSize: jpegBlob.size,
+                    });
+                  } else {
+                    reject(new Error('Failed to export canvas blob'));
+                  }
+                },
+                'image/jpeg',
+                quality
+              );
+            }
+          },
+          'image/webp',
+          quality
+        );
+      };
+
+      img.onerror = () => reject(new Error('Failed to load image file'));
+      img.src = e.target?.result as string;
+    };
+
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
 export function getLocalStorageUsage(): { usedBytes: number; usedFormatted: string; percentEstimate: number } {
   try {
     let totalBytes = 0;

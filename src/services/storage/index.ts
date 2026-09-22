@@ -1,8 +1,11 @@
 import { IStorageService } from './IStorageService';
-import { LocalStorageService } from './LocalStorageService';
+import { FirestoreStorageService } from './FirestoreStorageService';
 
-// To switch to Supabase later, simply replace LocalStorageService with SupabaseStorageService:
-// export const storageService: IStorageService = new SupabaseStorageService();
+// Active storage service: Firebase Firestore for database, with Supabase Storage for media
+export const storageService: IStorageService = FirestoreStorageService;
 
-export const storageService: IStorageService = LocalStorageService;
 export * from './IStorageService';
+export { FirestoreStorageService } from './FirestoreStorageService';
+export { LocalStorageService } from './LocalStorageService';
+export { supabaseMediaService } from './SupabaseMediaService';
+export { runInitialMigrationIfEmpty } from './migrationService';

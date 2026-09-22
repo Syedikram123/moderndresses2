@@ -24,6 +24,7 @@ import { AdminCategoriesList } from './pages/admin/AdminCategoriesList';
 import { AdminSubcategoriesList } from './pages/admin/AdminSubcategoriesList';
 import { AdminHomepageCMS } from './pages/admin/AdminHomepageCMS';
 import { AdminSettings } from './pages/admin/AdminSettings';
+import { AdminWhatsAppClicks } from './pages/admin/AdminWhatsAppClicks';
 
 // Scroll to top helper on navigation
 const ScrollToTop = () => {
@@ -90,6 +91,7 @@ export const App: React.FC = () => {
               <Route path="products/edit/:id" element={<AdminProductEdit />} />
               <Route path="categories" element={<AdminCategoriesList />} />
               <Route path="subcategories" element={<AdminSubcategoriesList />} />
+              <Route path="whatsapp-clicks" element={<AdminWhatsAppClicks />} />
               <Route path="homepage" element={<AdminHomepageCMS />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>

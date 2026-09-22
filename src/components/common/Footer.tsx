@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, MessageCircle, Clock, ShieldCheck, Heart } from 'lucide-react';
+import { MapPin, Phone, Clock, ShieldCheck, Heart } from 'lucide-react';
+import { FaWhatsapp, FaInstagram } from 'react-icons/fa';
 import { useStore } from '../../context/StoreContext';
 import { generateGeneralInquiryWhatsAppUrl } from '../../utils/whatsapp';
 
@@ -98,7 +99,7 @@ export const Footer: React.FC = () => {
           {/* Col 4: Store Info */}
           <div>
   <h4 className="text-xs font-bold uppercase tracking-widest text-gold-400 mb-4">
-    Store 
+    About Us
   </h4>
 
   <div className="space-y-3 text-sm text-stone-300">
@@ -126,15 +127,26 @@ export const Footer: React.FC = () => {
     </a>
 
     {/* WhatsApp */}
-    <a
-      href="https://wa.me/917204919857"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-2.5 hover:text-gold-300 transition-colors"
-    >
-      <MessageCircle className="w-4 h-4 text-gold-400 flex-shrink-0" />
-      <span className="text-xs">7204919857</span>
-    </a>
+<a
+  href="https://wa.me/917204919857"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center gap-2.5 hover:text-gold-300 transition-colors"
+>
+  <FaWhatsapp className="w-4 h-4 text-gold-400 flex-shrink-0" />
+  <span className="text-xs">7204919857</span>
+</a>
+
+{/* Instagram */}
+<a
+  href="https://instagram.com/moderndressesbidar"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center gap-2.5 hover:text-gold-300 transition-colors"
+>
+  <FaInstagram className="w-4 h-4 text-gold-400 flex-shrink-0" />
+  <span className="text-xs">@moderndressesbidar</span>
+</a>
 
 
 

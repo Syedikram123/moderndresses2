@@ -155,3 +155,14 @@ export interface StorageDataBackup {
   homepageSettings: HomepageSettings;
   storeSettings: StoreSettings;
 }
+
+export interface WhatsAppClickEvent {
+  id: string;
+  productId: string;
+  productName: string;
+  categoryId: string;
+  categoryName: string;
+  subcategoryId: string;
+  subcategoryName: string;
+  timestamp: string; // ISO 8601 string
+}

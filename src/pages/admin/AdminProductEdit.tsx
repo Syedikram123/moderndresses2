@@ -15,7 +15,8 @@ import { useStore } from '../../context/StoreContext';
 import { storageService } from '../../services/storage';
 import { Product, ProductColour, ProductStatus } from '../../types';
 import { slugify, calculateDiscount } from '../../utils/formatters';
-import { compressImage } from '../../utils/imageCompressor';
+import { compressImage, compressImageToWebP } from '../../utils/imageCompressor';
+import { supabaseMediaService } from '../../services/storage/SupabaseMediaService';
 
 const PRESET_TAGS = [
   'New',
@@ -203,6 +204,12 @@ export const AdminProductEdit: React.FC = () => {
       alert('A product must have at least 1 colour.');
       return;
     }
+    const colToRemove = colours.find((c) => c.id === colourId);
+    if (colToRemove && supabaseMediaService.isConfigured()) {
+      for (const imgUrl of colToRemove.images) {
+        supabaseMediaService.deleteMediaByUrlOrPath(imgUrl);
+      }
+    }
     setColours(colours.filter((c) => c.id !== colourId));
   };
 
@@ -217,7 +224,7 @@ export const AdminProductEdit: React.FC = () => {
     );
   };
 
-  // Image Upload with Canvas Compression (Requirement #50: max 5 images)
+  // Image Upload with Supabase Storage & WebP compression (fallback to canvas)
   const handleImageFileUpload = async (colourId: string, file: File) => {
     const col = colours.find((c) => c.id === colourId);
     if (!col) return;
@@ -228,18 +235,31 @@ export const AdminProductEdit: React.FC = () => {
     }
 
     try {
-      // Auto compress to ~30-50KB
-      const result = await compressImage(file, 900, 0.8);
+      let finalImageUrl = '';
+      const targetProductId = id || `temp_${Date.now()}`;
+
+      if (supabaseMediaService.isConfigured()) {
+        const webpResult = await compressImageToWebP(file, 900, 0.82);
+        finalImageUrl = await supabaseMediaService.uploadProductImage(
+          targetProductId,
+          colourId,
+          webpResult.blob
+        );
+      } else {
+        const result = await compressImage(file, 900, 0.8);
+        finalImageUrl = result.dataUrl;
+      }
+
       const updatedColours = colours.map((c) => {
         if (c.id === colourId) {
-          return { ...c, images: [...c.images, result.dataUrl] };
+          return { ...c, images: [...c.images, finalImageUrl] };
         }
         return c;
       });
       setColours(updatedColours);
     } catch (err) {
       console.error(err);
-      alert('Failed to process image upload.');
+      alert('Failed to process and upload image.');
     }
   };
 
@@ -267,6 +287,12 @@ export const AdminProductEdit: React.FC = () => {
   };
 
   const handleRemoveImage = (colourId: string, imageIndex: number) => {
+    const col = colours.find((c) => c.id === colourId);
+    const imgUrlToRemove = col?.images[imageIndex];
+    if (imgUrlToRemove && supabaseMediaService.isConfigured()) {
+      supabaseMediaService.deleteMediaByUrlOrPath(imgUrlToRemove);
+    }
+
     setColours(
       colours.map((c) => {
         if (c.id === colourId) {

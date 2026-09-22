@@ -13,9 +13,13 @@ import {
   X,
   HardDrive,
   Sparkles,
+  MessageCircle,
+  Cloud,
 } from 'lucide-react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useStore } from '../../context/StoreContext';
+import { isFirebaseConfigured } from '../../config/firebase';
+import { isSupabaseConfigured } from '../../config/supabase';
 
 export const AdminLayout: React.FC = () => {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -34,6 +38,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Products', path: '/admin/products', icon: Package },
     { name: 'Categories', path: '/admin/categories', icon: FolderTree },
     { name: 'Subcategories', path: '/admin/subcategories', icon: Tags },
+    { name: 'WHATSAPP CLICKS', path: '/admin/whatsapp-clicks', icon: MessageCircle },
     { name: 'Homepage Settings', path: '/admin/homepage', icon: Sliders },
     { name: 'Store Settings', path: '/admin/settings', icon: Settings },
   ];
@@ -90,21 +95,20 @@ export const AdminLayout: React.FC = () => {
 
         {/* Storage status & user */}
         <div className="p-4 border-t border-stone-800 space-y-3">
-          <div className="bg-stone-800/80 rounded-xl p-3 text-xs space-y-1.5 border border-stone-700">
+          <div className="bg-stone-800/80 rounded-xl p-3 text-xs space-y-2 border border-stone-700">
             <div className="flex items-center justify-between text-stone-300">
               <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase">
-                <HardDrive className="w-3.5 h-3.5 text-gold-400" />
-                <span>Local Storage</span>
+                <Cloud className="w-3.5 h-3.5 text-gold-400" />
+                <span>{isFirebaseConfigured ? 'Firestore DB' : 'Local Storage'}</span>
               </span>
-              <span className="font-mono text-[10px]">{storageMetrics.usedFormatted}</span>
+              <span className="flex items-center gap-1">
+                <span className={`w-2 h-2 rounded-full ${isFirebaseConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+                <span className="font-mono text-[10px] text-stone-300">{isFirebaseConfigured ? 'Connected' : 'Local'}</span>
+              </span>
             </div>
-            <div className="w-full bg-stone-700 h-1.5 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  storageMetrics.percentEstimate > 80 ? 'bg-rose-500' : 'bg-emerald-400'
-                }`}
-                style={{ width: `${Math.max(5, storageMetrics.percentEstimate)}%` }}
-              />
+            <div className="flex items-center justify-between text-[10px] text-stone-400 border-t border-stone-700/60 pt-1.5">
+              <span>Supabase Media</span>
+              <span className="text-stone-300 font-mono">{isSupabaseConfigured ? 'Connected' : 'Local'}</span>
             </div>
           </div>
 
@@ -205,10 +209,14 @@ export const AdminLayout: React.FC = () => {
               <Menu className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2 text-xs">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
-                LOCAL DEMO MODE
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                isFirebaseConfigured
+                  ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                  : 'bg-amber-100 text-amber-900 border-amber-300'
+              }`}>
+                {isFirebaseConfigured ? 'CLOUD FIRESTORE' : 'LOCAL DEMO MODE'}
               </span>
-           </div>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">

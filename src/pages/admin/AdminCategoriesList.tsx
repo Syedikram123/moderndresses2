@@ -4,7 +4,8 @@ import { useStore } from '../../context/StoreContext';
 import { storageService } from '../../services/storage';
 import { Category } from '../../types';
 import { slugify } from '../../utils/formatters';
-import { compressImage } from '../../utils/imageCompressor';
+import { compressImage, compressImageToWebP } from '../../utils/imageCompressor';
+import { supabaseMediaService } from '../../services/storage/SupabaseMediaService';
 
 export const AdminCategoriesList: React.FC = () => {
   const { categories, subcategories, products, refreshData } = useStore();
@@ -55,9 +56,20 @@ export const AdminCategoriesList: React.FC = () => {
 
   const handleImageUpload = async (file: File) => {
     try {
-      const res = await compressImage(file, 900, 0.8);
-      setCoverImage(res.dataUrl);
+      const catId = editingCategory?.id || `temp_${Date.now()}`;
+      if (supabaseMediaService.isConfigured()) {
+        const webpResult = await compressImageToWebP(file, 900, 0.82);
+        const url = await supabaseMediaService.uploadCategoryCover(catId, webpResult.blob);
+        if (coverImage && coverImage !== url) {
+          supabaseMediaService.deleteMediaByUrlOrPath(coverImage);
+        }
+        setCoverImage(url);
+      } else {
+        const res = await compressImage(file, 900, 0.8);
+        setCoverImage(res.dataUrl);
+      }
     } catch (err) {
+      console.error(err);
       alert('Failed to upload image.');
     }
   };
