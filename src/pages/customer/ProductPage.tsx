@@ -71,7 +71,7 @@ export const ProductPage: React.FC = () => {
       selectedColour: currentColour.name,
       selectedSize,
       currentUrl,
-      whatsappNumber: storeSettings?.whatsappNumber || '8951337609',
+      whatsappNumber: storeSettings?.whatsappNumber || '7204919857',
       isPriceHidden: !product.showPrice,
       isOutOfStock,
     });

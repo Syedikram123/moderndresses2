@@ -827,7 +827,7 @@ export const INITIAL_HOMEPAGE_SETTINGS: HomepageSettings = {
     description: 'Each piece at Modern Dresses is thoughtfully curated for perfection in fabric, stitching, and finish. Visit our boutique or connect directly on WhatsApp for personalized styling advice.',
     image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80',
     btnText: 'CONNECT ON WHATSAPP',
-    btnLink: 'https://wa.me/918951337609',
+    btnLink: 'https://wa.me/917204919857',
   },
   visibleCategoryIds: ['cat-boys', 'cat-girls', 'cat-women', 'cat-mens'],
 };
@@ -836,10 +836,10 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
   storeName: 'Modern Dresses',
   tagline: 'Fashion for Every Generation',
   location: 'Bidar, Karnataka',
-  phone: '+91 8951337609',
-  whatsappNumber: '8951337609', // Per user's explicit instruction
+  phone: '+91 7204919857',
+  whatsappNumber: '7204919857', // Per user's explicit instruction
   email: 'info@moderndresses.com',
-  address: 'Main Market Road, Near Gandhi Gunj, Bidar - 585401, Karnataka, India',
+  address: 'Main Market Road, Near Gawan Chowk, Bidar - 585401, Karnataka, India',
   businessHours: 'Monday - Sunday: 10:00 AM - 9:30 PM',
   instagram: 'https://instagram.com/moderndressesbidar',
   facebook: 'https://facebook.com/moderndressesbidar',

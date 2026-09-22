@@ -7,7 +7,7 @@ import { generateGeneralInquiryWhatsAppUrl } from '../../utils/whatsapp';
 export const ContactPage: React.FC = () => {
   const { storeSettings } = useStore();
   const whatsappUrl = generateGeneralInquiryWhatsAppUrl(
-    storeSettings?.whatsappNumber || '8951337609',
+    storeSettings?.whatsappNumber || '7204919857',
     storeSettings?.storeName || 'Modern Dresses'
   );
 
@@ -51,7 +51,7 @@ export const ContactPage: React.FC = () => {
               className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>Chat with +91 {storeSettings?.whatsappNumber || '8951337609'}</span>
+              <span>Chat with +91 {storeSettings?.whatsappNumber || '7204919857'}</span>
             </a>
           </div>
 
@@ -62,7 +62,7 @@ export const ContactPage: React.FC = () => {
               <h3 className="text-base font-bold">Store Address</h3>
             </div>
             <p className="text-xs sm:text-sm text-charcoal-muted leading-relaxed pl-8">
-              {storeSettings?.address || 'Main Market Road, Near Gandhi Gunj, Bidar - 585401, Karnataka, India'}
+              {storeSettings?.address || 'Main Market Road, Near Gawan Chowk, Bidar - 585401, Karnataka, India'}
             </p>
           </div>
 
@@ -74,7 +74,7 @@ export const ContactPage: React.FC = () => {
                 <h4 className="text-xs font-bold uppercase tracking-wider">Phone Call</h4>
               </div>
               <p className="text-xs text-charcoal-muted">
-                {storeSettings?.phone || '+91 8951337609'}
+                {storeSettings?.phone || '+91 7204919857'}
               </p>
             </div>
 

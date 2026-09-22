@@ -11,7 +11,7 @@ export function sanitizePhoneNumber(phone: string): string {
     return digits;
   }
 
-  return digits || '918951337609';
+  return digits || '917204919857';
 }
 
 export interface WhatsAppMessageParams {

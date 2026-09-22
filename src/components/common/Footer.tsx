@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
   const activeCategories = categories.filter((c) => c.isActive);
 
   const whatsappUrl = generateGeneralInquiryWhatsAppUrl(
-    storeSettings?.whatsappNumber || '8951337609',
+    storeSettings?.whatsappNumber || '7204919857',
     storeSettings?.storeName || 'Modern Dresses'
   );
 
@@ -112,28 +112,28 @@ export const Footer: React.FC = () => {
 >
   <MapPin className="w-4 h-4 text-gold-400 mt-1 flex-shrink-0" />
   <span className="text-xs leading-relaxed">
-    {storeSettings?.address || 'Main Market Road, Near Gandhi Gunj, Bidar - 585401, Karnataka'}
+    {storeSettings?.address || 'Main Market Road, Near Gawan Chowk, Bidar - 585401, Karnataka'}
   </span>
 </a>
 
     {/* Call */}
     <a
-      href="tel:+918951337609"
+      href="tel:+917204919857"
       className="flex items-center gap-2.5 hover:text-gold-300 transition-colors"
     >
       <Phone className="w-4 h-4 text-gold-400 flex-shrink-0" />
-      <span className="text-xs">8951337609</span>
+      <span className="text-xs">7204919857</span>
     </a>
 
     {/* WhatsApp */}
     <a
-      href="https://wa.me/918951337609"
+      href="https://wa.me/917204919857"
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-2.5 hover:text-gold-300 transition-colors"
     >
       <MessageCircle className="w-4 h-4 text-gold-400 flex-shrink-0" />
-      <span className="text-xs">8951337609</span>
+      <span className="text-xs">7204919857</span>
     </a>
 
 

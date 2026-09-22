@@ -8,7 +8,7 @@ import { generateGeneralInquiryWhatsAppUrl } from '../../utils/whatsapp';
 export const AboutPage: React.FC = () => {
   const { storeSettings } = useStore();
   const whatsappUrl = generateGeneralInquiryWhatsAppUrl(
-    storeSettings?.whatsappNumber || '8951337609',
+    storeSettings?.whatsappNumber || '7204919857',
     storeSettings?.storeName || 'Modern Dresses'
   );
 

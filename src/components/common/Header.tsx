@@ -16,7 +16,7 @@ export const Header: React.FC = () => {
 
   const activeCategories = categories.filter((c) => c.isActive);
   const whatsappUrl = generateGeneralInquiryWhatsAppUrl(
-    storeSettings?.whatsappNumber || '8951337609',
+    storeSettings?.whatsappNumber || '7204919857',
     storeSettings?.storeName || 'Modern Dresses'
   );
 
@@ -211,7 +211,7 @@ export const Header: React.FC = () => {
 
   {/* Call */}
   <a
-    href="tel:+918951337609"
+    href="tel:+917204919857"
     aria-label="Call"
     title="Call"
     className="flex items-center justify-center w-9 h-9 bg-emerald-600 text-white rounded-full shadow-sm hover:bg-emerald-700 transition-colors">
@@ -368,7 +368,7 @@ export const Header: React.FC = () => {
 
     {/* WhatsApp */}
 <a
-  href="https://wa.me/918951337609"
+  href="https://wa.me/917204919857"
   target="_blank"
   rel="noopener noreferrer"
   aria-label="WhatsApp"
@@ -410,7 +410,7 @@ export const Header: React.FC = () => {
 
     {/* Call */}
     <a
-      href="tel:+918951337609"
+      href="tel:+917204919857"
       aria-label="Call"
       className="flex items-center justify-center py-3 bg-emerald-600 text-white rounded-xl shadow-sm hover:bg-emerald-700 transition-colors"
       >
